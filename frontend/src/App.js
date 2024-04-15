@@ -4,6 +4,7 @@ import { Route, BrowserRouter as Router } from 'react-router-dom'
 import Footer from './components/Footer'
 import HeaderNavBar from './components/HeaderNavBar'
 import CartScreen from './screens/CartScreen'
+import FilterCategoryScreen from './screens/FilterCategoryScreen'
 import FilterScreen from "./screens/FilterScreen"
 import HomeScreen from './screens/HomeScreen'
 import LoginScreen from './screens/LoginScreen'
@@ -61,6 +62,7 @@ const App = () => {
           <Route path='/admin/orderlist' component={OrderListScreen} />
           <Route path='/search/:keyword' component={HomeScreen} exact />
           <Route path='/colorFilter/:color' component={FilterScreen} exact />
+          <Route path='/categoryFilter/:category' component={FilterCategoryScreen} exact />
           <Route path='/page/:pageNumber' component={HomeScreen} exact />
           <Route
             path='/search/:keyword/page/:pageNumber'
@@ -70,6 +72,11 @@ const App = () => {
           <Route
             path='/colorFilter/:color/page/:pageNumber'
             component={FilterScreen}
+            exact
+          />
+          <Route
+            path='/categoryFilter/:category/page/:pageNumber'
+            component={FilterCategoryScreen}
             exact
           />
           <Route path='/' component={HomeScreen} exact />

@@ -60,6 +60,35 @@ const getProductsByColor = asyncHandler(async (req, res) => {
     pages: Math.ceil(count / pageSize),
   })
 })
+// @desc    Fetch all products
+// @route   GET /api/products/filterByCategory
+// @access  Public
+const getProductsByCategory = asyncHandler(async (req, res) => {
+  const pageSize = 10
+  const page = Number(req.query.pageNumber) || 1
+
+
+  const keyword = req.query.category
+    ? {
+        category: {
+          $regex: req.query.category,
+          $options: "i",
+        },
+      }
+    : {}
+
+  const count = await Product.countDocuments({ ...keyword })
+  const products = await Product.find({ ...keyword })
+    .limit(pageSize)
+    .skip(pageSize * (page - 1))
+    
+
+  res.json({
+    products,
+    page,
+    pages: Math.ceil(count / pageSize),
+  })
+})
 
 // @desc    Fetch all products
 // @route   GET /api/products
@@ -266,6 +295,6 @@ const getTopProducts = asyncHandler(async (req, res) => {
 })
 
 export {
-  createProduct, createProductReview, deleteProduct, getProductById, getProducts, getProductsByColor, getTopProducts, updateProduct
+  createProduct, createProductReview, deleteProduct, getProductById, getProducts, getProductsByCategory, getProductsByColor, getTopProducts, updateProduct
 };
 

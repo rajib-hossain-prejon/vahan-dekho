@@ -5,6 +5,7 @@ import {
   deleteProduct,
   getProductById,
   getProducts,
+  getProductsByCategory,
   getProductsByColor,
   getTopProducts,
   updateProduct
@@ -14,6 +15,7 @@ const router = express.Router()
 
 router.route("/").get(getProducts).post(protect, admin, createProduct)
 router.route("/filterByColor").get(getProductsByColor)
+router.route("/filterByCategory").get(getProductsByCategory)
 router.route("/:id/reviews").post(protect, createProductReview)
 router.get("/top", getTopProducts)
 router

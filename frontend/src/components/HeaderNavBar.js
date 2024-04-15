@@ -139,7 +139,7 @@ export default function PrimarySearchAppBar() {
     setAnchorElCategory(null);
    
     handleMobileMenuClose();
-     history.push(`/search/${text}`)
+     history.push(`/categoryFilter/${text}`)
   };
 
   const handleMenuCloseAdmin = (text) => {

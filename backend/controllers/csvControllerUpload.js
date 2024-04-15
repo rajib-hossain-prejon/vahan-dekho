@@ -11,13 +11,27 @@ const createCSV = asyncHandler( async (req, res) => {
   const __dirname = path.resolve()
 
   const totalRecords = [];
+  
 
 try{
 
   fs.createReadStream(path.join(__dirname, './','/uploads/'+ req.file.filename))
     .pipe(csv.parse({ headers: true }))
     .on('error', error => console.error(error))
-    .on('data', row => totalRecords.push(row))
+    .on('data', row => {
+      // Convert minPrice and maxPrice to integers
+      const minPrice = parseInt(row.minPrice, 10);
+      const maxPrice = parseInt(row.maxPrice, 10);
+
+      // Create the priceRange object
+      const priceRange = {
+        minPrice,
+        maxPrice
+      };
+
+      // Add the priceRange object to the row
+      totalRecords.push({ ...row, priceRange });
+    })
     .on('end', async rowCount => {
      
       try{

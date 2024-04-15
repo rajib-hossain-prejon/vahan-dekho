@@ -41,6 +41,11 @@ const productSchema = mongoose.Schema(
       required: true,
       default: 'Not Specified'
     },
+    color: {
+      type: String,
+      required: true,
+      default: 'Not Specified'
+    },
     description: {
       type: String,
       required: true,
@@ -70,6 +75,10 @@ const productSchema = mongoose.Schema(
       required: true,
       default: 0,
     },
+    priceRange: {
+  minPrice: { type: Number },
+  maxPrice: { type: Number}
+},
     countInStock: {
       type: Number,
       required: true,

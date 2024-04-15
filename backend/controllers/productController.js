@@ -1,5 +1,6 @@
-import asyncHandler from "express-async-handler"
-import Product from "../models/productModel.js"
+import asyncHandler from "express-async-handler";
+import Product from "../models/productModel.js";
+
 
 // @desc    Fetch all products
 // @route   GET /api/products
@@ -28,6 +29,82 @@ const getProducts = asyncHandler(async (req, res) => {
     pages: Math.ceil(count / pageSize),
   })
 })
+
+
+// @desc    Fetch all products
+// @route   GET /api/products/filterByColor
+// @access  Public
+const getProductsByColor = asyncHandler(async (req, res) => {
+  const pageSize = 10
+  const page = Number(req.query.pageNumber) || 1
+
+
+  const keyword = req.query.color
+    ? {
+        color: {
+          $regex: req.query.color,
+          $options: "i",
+        },
+      }
+    : {}
+
+  const count = await Product.countDocuments({ ...keyword })
+  const products = await Product.find({ ...keyword })
+    .limit(pageSize)
+    .skip(pageSize * (page - 1))
+    
+
+  res.json({
+    products,
+    page,
+    pages: Math.ceil(count / pageSize),
+  })
+})
+
+// @desc    Fetch all products
+// @route   GET /api/products
+// @access  Public
+// const getProducts = asyncHandler(async (req, res) => {
+//   const pageSize = 10;
+//   const page = Number(req.query.pageNumber) || 1;
+//   const { keyword, color, category, minPrice, maxPrice } = req.query;
+
+//   const query = {};
+//   console.log('COlor: ',color)
+//   console.log('keyword: ',keyword)
+//   console.log('category: ',color)
+  
+
+//   if (keyword) {
+//     query.name = { $regex: keyword, $options: 'i' };
+//   }
+
+//   if (color) {
+//     query.color = color;
+//   }
+
+//   if (category) {
+//     query.category = category;
+//   }
+
+//   if (minPrice && maxPrice) {
+//     query.priceRange = {
+//       $gte: parseInt(minPrice, 10),
+//       $lte: parseInt(maxPrice, 10)
+//     };
+//   }
+
+//   const count = await Product.countDocuments(query);
+//   const products = await Product.find(query)
+//     .limit(pageSize)
+//     .skip(pageSize * (page - 1));
+
+//   res.json({
+//     products,
+//     page,
+//     pages: Math.ceil(count / pageSize),
+//   });
+// });
 
 // @desc    Fetch single product
 // @route   GET /api/products/:id
@@ -70,12 +147,21 @@ const createProduct = asyncHandler(async (req, res) => {
     image,
     brand,
     category,
+    color,
+    minPrice,
+    maxPrice,
     countInStock,
     features,
     latestUpdates,
   } = req.body;
 
   const userId = req.user._id;
+  const priceRange = {
+    minPrice: parseInt(minPrice,10),
+    maxPrice: parseInt(maxPrice,10)
+  }
+
+ 
 
 
 
@@ -87,6 +173,8 @@ const createProduct = asyncHandler(async (req, res) => {
     image,
     brand,
     category,
+    color,
+   priceRange,
     countInStock,
     numReviews: 0, // Initialize numReviews to 0 for a new product
     description,
@@ -178,6 +266,6 @@ const getTopProducts = asyncHandler(async (req, res) => {
 })
 
 export {
-  createProduct, createProductReview, deleteProduct, getProductById, getProducts, getTopProducts, updateProduct
-}
+  createProduct, createProductReview, deleteProduct, getProductById, getProducts, getProductsByColor, getTopProducts, updateProduct
+};
 

@@ -30,7 +30,7 @@ try{
       };
 
       // Add the priceRange object to the row
-      totalRecords.push({ ...row, priceRange });
+      totalRecords.push({ ...row,minPrice, maxPrice, priceRange });
     })
     .on('end', async rowCount => {
      

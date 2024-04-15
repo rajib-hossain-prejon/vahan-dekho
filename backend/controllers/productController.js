@@ -90,6 +90,33 @@ const getProductsByCategory = asyncHandler(async (req, res) => {
   })
 })
 
+
+// @desc    Fetch all products within Price Range
+// @route   GET /api/products/filterByPrice
+// @access  Public
+const getProductsByPrice = asyncHandler(async (req, res) => {
+  const pageSize = 10;
+  const page = Number(req.query.pageNumber) || 1;
+  const minPrice = req.query.minPrice ? parseInt(req.query.minPrice, 10) : 0;
+  // const maxPrice = req.query.maxPrice ? parseInt(req.query.maxPrice, 10) : Number.MAX_SAFE_INTEGER;
+
+  const count = await Product.countDocuments({
+    minPrice: { $gte: minPrice },
+  });
+
+  
+
+  const products = await Product.find({
+    minPrice: { $gte: minPrice},
+  })
+    .limit(pageSize)
+    .skip(pageSize * (page - 1));
+
+
+
+  res.json({ products, page, pages: Math.ceil(count / pageSize) });
+});
+
 // @desc    Fetch all products
 // @route   GET /api/products
 // @access  Public
@@ -295,6 +322,6 @@ const getTopProducts = asyncHandler(async (req, res) => {
 })
 
 export {
-  createProduct, createProductReview, deleteProduct, getProductById, getProducts, getProductsByCategory, getProductsByColor, getTopProducts, updateProduct
+  createProduct, createProductReview, deleteProduct, getProductById, getProducts, getProductsByCategory, getProductsByColor, getProductsByPrice, getTopProducts, updateProduct
 };
 

@@ -10,7 +10,9 @@ import Typography from '@material-ui/core/Typography';
 import { alpha, makeStyles } from '@material-ui/core/styles';
 import AccountCircle from '@material-ui/icons/AccountCircle';
 import CategoryIcon from '@material-ui/icons/Category';
+import ColorLensIcon from '@material-ui/icons/ColorLens';
 import LocalCarWashIcon from '@material-ui/icons/LocalCarWash';
+import MenuIcon from '@material-ui/icons/Menu';
 import MoreIcon from '@material-ui/icons/MoreVert';
 import SearchIcon from '@material-ui/icons/Search';
 import ShoppingCartIcon from '@material-ui/icons/ShoppingCart';
@@ -20,7 +22,32 @@ import { useDispatch, useSelector } from 'react-redux';
 import { useHistory, useLocation } from 'react-router-dom';
 import { logout } from '../actions/userActions';
 
+import Divider from '@material-ui/core/Divider';
+import Drawer from '@material-ui/core/Drawer';
+import List from '@material-ui/core/List';
+import ListItem from '@material-ui/core/ListItem';
+import ListItemIcon from '@material-ui/core/ListItemIcon';
+import ListItemText from '@material-ui/core/ListItemText';
+import MonetizationOnIcon from '@material-ui/icons/MonetizationOn';
+import clsx from 'clsx';
+
+
+
 const useStyles = makeStyles((theme) => ({
+    root: {
+    width: '100%',
+  },
+  heading: {
+    fontSize: theme.typography.pxToRem(15),
+    fontWeight: theme.typography.fontWeightRegular,
+  },
+   list: {
+    width: 250,
+  },
+  fullList: {
+    width: 'auto',
+  },
+   
   grow: {
     flexGrow: 1,
   },
@@ -82,6 +109,7 @@ const useStyles = makeStyles((theme) => ({
       display: 'none',
     },
   },
+  
 }));
 
 export default function PrimarySearchAppBar() {
@@ -196,6 +224,11 @@ routes: '/admin/orderList',
   },
   
 ]
+
+
+
+
+
 
   const renderMenuAdmin = (
     <Menu
@@ -353,10 +386,114 @@ searchKeyword: 'electric (ev)',
     </Menu>
   );
 
+
+
+  // ---------- Drawer --------------- 
+
+  const colorArray = ['white', 'black', 'red', 'blue', 'silver'];
+const priceRangeArray = [
+  { name: '1 lakh', minPrice: 100000 },
+  { name: '5 lakhs', minPrice: 500000},
+  { name: '10 lakhs', minPrice: 1000000},
+  { name: '20 lakhs', minPrice: 2000000},
+  { name: '50 lakhs', minPrice: 5000000},
+];
+
+const handleMenuCloseCategoryDrawer = (text) => {
+  setAnchorElCategory(null);
+  handleMobileMenuClose();
+  if (text === 'color') {
+    history.push('/colorFilter');
+  } else if (text === 'price') {
+    history.push('/priceFilter');
+  } else {
+    history.push(text);
+  }
+};
+ 
+  const [state, setState] = React.useState({
+    top: false,
+    left: false,
+    bottom: false,
+    right: false,
+  });
+
+  const toggleDrawer = (anchor, open) => (event) => {
+    if (event.type === 'keydown' && (event.key === 'Tab' || event.key === 'Shift')) {
+      return;
+    }
+
+    setState({ ...state, [anchor]: open });
+  };
+
+  const list = (anchor) => (
+  <div
+    className={clsx(classes.list, {
+      [classes.fullList]: anchor === 'top' || anchor === 'bottom',
+    })}
+    role="presentation"
+    onClick={toggleDrawer(anchor, false)}
+    onKeyDown={toggleDrawer(anchor, false)}
+  >
+    <List>
+      <ListItem >
+        <ListItemIcon>
+          <ColorLensIcon />
+        </ListItemIcon>
+        <ListItemText primary="Colors" />
+      </ListItem>
+      <Divider/>
+      {colorArray.map((color) => (
+        <ListItem
+          button
+          key={color}
+          onClick={() => handleMenuCloseCategoryDrawer(`/colorFilter/${color}`)}
+        >
+          <ListItemText primary={color.charAt(0).toUpperCase() + color.slice(1)}  />
+        </ListItem>
+      ))}
+      <Divider />
+      <ListItem  >
+        <ListItemIcon>
+          <MonetizationOnIcon />
+        </ListItemIcon>
+        <ListItemText primary="Price Filter" />
+      </ListItem>
+       <Divider/>
+      {priceRangeArray.map((priceRange) => (
+        <ListItem
+          button
+          key={priceRange.name}
+          onClick={() =>
+            handleMenuCloseCategoryDrawer(
+               `/priceFilter/${priceRange.minPrice}`
+              // `/minPrice/${priceRange.minPrice}/maxPrice/${priceRange.maxPrice}`
+            )
+          }
+        >
+          <ListItemText primary={`Min. price: ${priceRange.name}`} />
+        </ListItem>
+      ))}
+    </List>
+  </div>
+);
+
+
   return (
     <div className={classes.grow}>
       <AppBar position="static">
         <Toolbar>
+
+ <IconButton
+            edge="start"
+            className={classes.menuButton}
+            color="inherit"
+            aria-label="open drawer"
+            onClick={toggleDrawer('left', true)}
+          >
+            <MenuIcon />
+          </IconButton>
+
           <IconButton
             edge="start"
             className={classes.menuButton}
@@ -474,10 +611,14 @@ searchKeyword: 'electric (ev)',
           </div>
         </Toolbar>
       </AppBar>
+       <Drawer anchor={'left'} open={state['left']} onClose={toggleDrawer('left', false)}>
+            {list('left')}
+          </Drawer>
       {renderMobileMenu}
       {renderMenu}
       {renderMenuAdmin}
       {renderMenuCategories}
+      
     </div>
   );
 }

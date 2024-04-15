@@ -79,6 +79,12 @@ const productSchema = mongoose.Schema(
   minPrice: { type: Number },
   maxPrice: { type: Number}
 },
+minPrice:{
+  type: Number
+},
+maxPrice:{
+  type: Number
+},
     countInStock: {
       type: Number,
       required: true,
